@@ -15,7 +15,7 @@ const (
 )
 
 type Client interface {
-	CreateFile(tenantId string, name string, file []byte) error
+	UploadSpecFile(tenantId string, name string, file []byte) error
 }
 
 type Store struct {
@@ -36,7 +36,7 @@ func NewStore() Client {
 }
 
 // Buckets/syncc/{tenant-id}/spec/[]spec
-func (store *Store) CreateFile(tenantId string, name string, file []byte) error {
+func (store *Store) UploadSpecFile(tenantId string, name string, file []byte) error {
 
 	w := store.client.Bucket(bucketName).
 		Object(fmt.Sprintf(pathTemplateSpec, tenantId, name)).
