@@ -6,16 +6,16 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 const (
-	bucketName       = "sync"
+	bucketName       = "syncc"
 	pathTemplateSpec = "%s/spec/%s"
 )
 
 type Client interface {
-	SaveSpec(tenantId string, name string) error
+	CreateFile(tenantId string, name string, file []byte) error
 }
 
 type Store struct {
@@ -29,23 +29,29 @@ func NewStore() Client {
 
 	client, err := storage.NewClient(ctx)
 	if err != nil {
-		log.Fatalf("failed to create storage client with '%v'", err)
+		logrus.Fatalf("failed to create storage client with '%v'", err)
 	}
 
 	return &Store{client: client}
 }
 
-// Buckets/sync/{tenant-id}/spec/[]spec
-func (store *Store) SaveSpec(tenantId string, name string) error {
+// Buckets/syncc/{tenant-id}/spec/[]spec
+func (store *Store) CreateFile(tenantId string, name string, file []byte) error {
 
 	w := store.client.Bucket(bucketName).
 		Object(fmt.Sprintf(pathTemplateSpec, tenantId, name)).
 		NewWriter(context.Background())
 	defer func() {
 		if err := w.Close(); err != nil {
-			log.Errorf("failed to close gcs writer with '%v'", err)
+			logrus.Errorf("failed to close gcs bucket '%s' writer file '%s' with '%v'",
+				bucketName, name, err)
 		}
 	}()
+
+	if _, err := w.Write(file); err != nil {
+		logrus.Errorf("failed to create file in GCS bucket '%s' file '%s' with '%v'", bucketName, name, err)
+		return err
+	}
 
 	return nil
 }

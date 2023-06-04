@@ -33,7 +33,7 @@ func (h *Handle) CreateWebhook(c *gin.Context) {
 	now := time.Now().Unix()
 	name := strconv.FormatInt(now, 10)
 
-	err := h.store.SaveSpec(tenant, name)
+	err := h.store.CreateFile(tenant, name, nil)
 	if err != nil {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
