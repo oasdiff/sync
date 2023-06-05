@@ -5,8 +5,8 @@ import (
 	"os"
 
 	"cloud.google.com/go/datastore"
+	"github.com/oasdiff/sync/internal/env"
 	"github.com/sirupsen/logrus"
-	"github.com/tufin/sabik/common/env"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 )
@@ -17,11 +17,11 @@ const (
 	KindTenant  Kind = "tenant"
 	KindWebhook Kind = "webhook"
 
-	EnvKeyDatastoreToken = "DATASTORE_KEY"
-	namespace            = "sync"
+	namespace = "sync"
 )
 
 type Client interface {
+	Get(kind Kind, id string, dst interface{}) error
 	GetAll(kind Kind, dst interface{}) error
 	Put(kind Kind, id string, src interface{}) error
 }
@@ -32,7 +32,7 @@ type ClientWrapper struct {
 
 func NewClientWrapper(project string) Client {
 
-	if key := env.GetEnvSensitive(EnvKeyDatastoreToken); key != "" {
+	if key := env.GetDatastoreKey(); key != "" {
 		conf, err := google.JWTConfigFromJSON([]byte(key), datastore.ScopeDatastore)
 		if err != nil {
 			logrus.Fatalf("failed to config datastore JWT from JSON key with '%v'", err)
@@ -60,6 +60,16 @@ func NewClientWrapper(project string) Client {
 	}
 
 	return &ClientWrapper{ds: client}
+}
+
+func (c *ClientWrapper) Get(kind Kind, id string, dst interface{}) error {
+
+	err := c.ds.Get(context.Background(), getKey(kind, id), dst)
+	if err != nil {
+		logrus.Errorf("failed to get '%s' id '%s' from datastore namespace '%s' with '%v'", kind, id, namespace, err)
+	}
+
+	return err
 }
 
 func (c *ClientWrapper) GetAll(kind Kind, dst interface{}) error {

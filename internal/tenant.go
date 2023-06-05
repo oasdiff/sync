@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -47,5 +48,6 @@ func (h *Handle) CreateTenant(c *gin.Context) {
 		return
 	}
 
+	h.sc.Info(fmt.Sprintf("tenant '%s' created", id))
 	c.JSON(http.StatusCreated, gin.H{"id": id})
 }

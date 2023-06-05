@@ -10,6 +10,7 @@ import (
 	"github.com/oasdiff/sync/internal"
 	"github.com/oasdiff/sync/internal/ds"
 	"github.com/oasdiff/sync/internal/gcs"
+	"github.com/oasdiff/sync/internal/slack"
 	"github.com/stretchr/testify/require"
 )
 
@@ -24,7 +25,8 @@ func TestCreateWebhook(t *testing.T) {
 	require.NoError(t, err)
 	w := httptest.NewRecorder()
 
-	internal.SetupRouter(ds.NewInMemoryClient(), gcs.NewInMemoryStore()).ServeHTTP(w, r)
+	internal.SetupRouter(ds.NewInMemoryClient(), gcs.NewInMemoryStore(),
+		slack.NewInMemoryClient()).ServeHTTP(w, r)
 
 	require.Equal(t, http.StatusCreated, w.Result().StatusCode)
 }

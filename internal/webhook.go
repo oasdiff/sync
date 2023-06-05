@@ -2,6 +2,7 @@ package internal
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -25,6 +26,11 @@ type CreateWebhookRequest struct {
 func (h *Handle) CreateWebhook(c *gin.Context) {
 
 	tenant := c.Param(PathParamTenantId)
+	ok := validateTenant(h.dsc, tenant)
+	if !ok {
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
 	ok, request, oas := getCreateWebhookRequest(tenant, c.Request.Body)
 	if !ok {
@@ -48,19 +54,32 @@ func (h *Handle) CreateWebhook(c *gin.Context) {
 		return
 	}
 
-	err = h.dsc.Put(ds.KindWebhook, uuid.NewString(), &ds.Webhook{
+	webhook := ds.Webhook{
 		TenantId: tenant,
 		Callback: request.Callback,
 		Spec:     request.Spec,
 		Copy:     name,
 		Created:  now,
-	})
+	}
+	err = h.dsc.Put(ds.KindWebhook, uuid.NewString(), &webhook)
 	if err != nil {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
+	h.sc.Info(fmt.Sprintf("webhook created '%+v'", webhook))
 	c.Writer.WriteHeader(http.StatusCreated)
+}
+
+func validateTenant(dsc ds.Client, tenantId string) bool {
+
+	var tenant ds.Tenant
+	err := dsc.Get(ds.KindTenant, tenantId, &tenant)
+	if err != nil || tenant.Id == "" {
+		return false
+	}
+
+	return true
 }
 
 func getCreateWebhookRequest(tenant string, body io.ReadCloser) (bool, *CreateWebhookRequest, *openapi3.T) {
