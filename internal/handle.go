@@ -1,9 +1,9 @@
 package internal
 
 import (
-	"github.com/oasdiff/sync/internal/ds"
-	"github.com/oasdiff/sync/internal/gcs"
-	"github.com/oasdiff/sync/internal/slack"
+	"github.com/oasdiff/go-common/ds"
+	"github.com/oasdiff/go-common/gcs"
+	"github.com/oasdiff/go-common/slack"
 )
 
 type Handle struct {

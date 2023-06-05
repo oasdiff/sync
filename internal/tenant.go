@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/goccy/go-json"
 	"github.com/google/uuid"
-	"github.com/oasdiff/sync/internal/ds"
+	"github.com/oasdiff/go-common/ds"
 	"github.com/sirupsen/logrus"
 )
 

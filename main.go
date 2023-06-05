@@ -1,11 +1,11 @@
 package main
 
 import (
+	"github.com/oasdiff/go-common/ds"
+	"github.com/oasdiff/go-common/env"
+	"github.com/oasdiff/go-common/gcs"
+	"github.com/oasdiff/go-common/slack"
 	"github.com/oasdiff/sync/internal"
-	"github.com/oasdiff/sync/internal/ds"
-	"github.com/oasdiff/sync/internal/env"
-	"github.com/oasdiff/sync/internal/gcs"
-	"github.com/oasdiff/sync/internal/slack"
 )
 
 func main() {
