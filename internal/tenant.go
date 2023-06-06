@@ -38,16 +38,17 @@ func (h *Handle) CreateTenant(c *gin.Context) {
 	}
 
 	id := uuid.NewString()
-	err = h.dsc.Put(ds.KindTenant, id, &ds.Tenant{
+	t := ds.Tenant{
 		Id:      id,
 		Name:    payload.Tenant,
 		Created: time.Now().Unix(),
-	})
+	}
+	err = h.dsc.Put(ds.KindTenant, id, &t)
 	if err != nil {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	h.sc.Info(fmt.Sprintf("tenant '%s' created", id))
+	h.sc.Info(fmt.Sprintf("tenant created '%+v'", t))
 	c.JSON(http.StatusCreated, gin.H{"id": id})
 }
