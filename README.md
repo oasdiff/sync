@@ -21,7 +21,7 @@ Now, for each OpenAPI spec that you depend on, create a webhook:
 curl -d '{"callback": "https://ci.my-company.com/webhooks", "spec": "https://some-service.com/balloons"}' https://sync.oasdiff.com/tenants/{tenant-id}/webhooks
 ```
 
-You are all set, in case of a breaking API changes, sync service will notify you using provided callback URL with the breaking errors, for example:
+You are all set. In case of a breaking API change, the sync service will notify you using the provided callback URL with the breaking errors. For example:
 ```
 {
     "breaking-changes": [
