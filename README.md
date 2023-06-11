@@ -18,9 +18,8 @@ You will get a response with your tenant ID, that looks like this:
 
 Now, for each OpenAPI spec that you depend on, create a webhook:
 ```
-curl -d '{"callback": "https://ci.my-company.com/webhooks", "spec": "https://some-service.com/balloons"}' https://sync.oasdiff.com/tenants/{tenant-id}/webhooks
+curl -d '{"callback": "https://api.example.com/webhooks", "spec": "https://some-service.com/balloons"}' https://sync.oasdiff.com/tenants/{tenant-id}/webhooks
 ```
-
 You are all set. In case of a breaking API change, the sync service will notify you using the provided callback URL with the breaking errors. For example:
 ```
 {
@@ -73,3 +72,4 @@ You are all set. In case of a breaking API change, the sync service will notify 
     ]
 }
 ```
+Note, provided callback service should response with HTTP 200 OK or 201 Created
