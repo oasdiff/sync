@@ -72,4 +72,4 @@ You are all set. In case of a breaking API change, the sync service will notify 
     ]
 }
 ```
-Note, provided callback service should response with HTTP 200 OK or 201 Created
+Note, provided callback service should respond with HTTP 200 OK or 201 Created
