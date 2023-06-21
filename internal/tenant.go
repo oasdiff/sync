@@ -33,10 +33,12 @@ func (h *Handle) CreateTenant(c *gin.Context) {
 
 	id := uuid.NewString()
 	t := ds.Tenant{
-		Id:   id,
-		Name: payload.Tenant,
-
-		Created: time.Now().Unix(),
+		Id:           id,
+		Name:         payload.Tenant,
+		Email:        payload.Email,
+		Callback:     payload.Callback,
+		SlackChannel: payload.SlackChannel,
+		Created:      time.Now().Unix(),
 	}
 	err = h.dsc.Put(ds.KindTenant, id, &t)
 	if err != nil {
