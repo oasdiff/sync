@@ -26,7 +26,7 @@ func TestCreateTenant(t *testing.T) {
 		}))
 	require.NoError(t, err)
 
-	internal.SetupRouter(ds.NewInMemoryClient(), gcs.NewInMemoryStore(),
+	internal.SetupRouter(ds.NewInMemoryClient(nil), gcs.NewInMemoryStore(nil),
 		slack.NewInMemoryClient()).ServeHTTP(w, r)
 
 	require.Equal(t, http.StatusCreated, w.Result().StatusCode)

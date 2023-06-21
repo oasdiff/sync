@@ -47,7 +47,7 @@ func (h *Handle) CreateWebhook(c *gin.Context) {
 	now := time.Now().Unix()
 	name := strconv.FormatInt(now, 10)
 
-	err = h.store.UploadSpecFile(tenant, name, payload)
+	err = h.store.UploadSpec(tenant, name, payload)
 	if err != nil {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
