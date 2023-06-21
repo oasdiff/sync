@@ -19,8 +19,7 @@ import (
 )
 
 type CreateWebhookRequest struct {
-	Callback string `json:"callback"`
-	Spec     string `json:"spec"`
+	Spec string `json:"spec"`
 }
 
 func (h *Handle) CreateWebhook(c *gin.Context) {
@@ -40,7 +39,7 @@ func (h *Handle) CreateWebhook(c *gin.Context) {
 
 	payload, err := yaml.Marshal(oas)
 	if err != nil {
-		logrus.Errorf("failed to marshal OAS with '%v' tenant '%s' callback '%s'", err, tenant, request.Callback)
+		logrus.Errorf("failed to marshal OAS with '%v' tenant '%s'", err, tenant)
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -56,7 +55,6 @@ func (h *Handle) CreateWebhook(c *gin.Context) {
 
 	webhook := ds.Webhook{
 		TenantId: tenant,
-		Callback: request.Callback,
 		Spec:     request.Spec,
 		Copy:     name,
 		Created:  now,
@@ -93,12 +91,6 @@ func getCreateWebhookRequest(tenant string, body io.ReadCloser) (bool, *CreateWe
 	err := json.NewDecoder(body).Decode(&payload)
 	if err != nil {
 		logrus.Infof("failed to decode create tenant request body with '%v' tenant '%s'", err, tenant)
-		return false, nil, nil
-	}
-
-	_, err = url.ParseRequestURI(payload.Callback)
-	if err != nil {
-		logrus.Infof("invalid callback '%s' tenant '%s'", payload.Callback, tenant)
 		return false, nil, nil
 	}
 

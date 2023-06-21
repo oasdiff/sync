@@ -17,7 +17,13 @@ import (
 func TestCreateTenant(t *testing.T) {
 
 	w := httptest.NewRecorder()
-	r, err := http.NewRequest(http.MethodPost, "/tenants", Encode(t, internal.CreateTenantRequest{Tenant: "test"}))
+	r, err := http.NewRequest(http.MethodPost, "/tenants",
+		Encode(t, internal.CreateTenantRequest{
+			Tenant:       "test",
+			Email:        "james@my-company.com",
+			Callback:     "https://api.my-company.com/webhooks",
+			SlackChannel: "https://hooks.slack.com/services/TLDF14G/AG123/abcd",
+		}))
 	require.NoError(t, err)
 
 	internal.SetupRouter(ds.NewInMemoryClient(), gcs.NewInMemoryStore(),

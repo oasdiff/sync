@@ -27,8 +27,7 @@ func createWebhook(t *testing.T, syncUrl string, tenant string) {
 
 	var buf bytes.Buffer
 	require.NoError(t, json.NewEncoder(&buf).Encode(internal.CreateWebhookRequest{
-		Callback: "https://test/me",
-		Spec:     "https://raw.githubusercontent.com/Tufin/oasdiff/main/data/simple.yaml",
+		Spec: "https://raw.githubusercontent.com/Tufin/oasdiff/main/data/simple.yaml",
 	}))
 
 	response, err := http.Post(fmt.Sprintf("%s/tenants/%s/webhooks", syncUrl, tenant), "application/json", &buf)
@@ -40,7 +39,8 @@ func createTenant(t *testing.T, syncUrl string) string {
 
 	var buf bytes.Buffer
 	require.NoError(t, json.NewEncoder(&buf).Encode(internal.CreateTenantRequest{
-		Tenant: "itest",
+		Tenant:   "itest",
+		Callback: "https://test/me",
 	}))
 
 	response, err := http.Post(fmt.Sprintf("%s/tenants", syncUrl), "application/json", &buf)
