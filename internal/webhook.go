@@ -19,7 +19,8 @@ import (
 )
 
 type CreateWebhookRequest struct {
-	Spec string `json:"spec"`
+	WebhookName string `json:"webhook_name"`
+	Spec        string `json:"spec"`
 }
 
 func (h *Handle) CreateWebhook(c *gin.Context) {
@@ -45,18 +46,19 @@ func (h *Handle) CreateWebhook(c *gin.Context) {
 	}
 
 	now := time.Now().Unix()
-	name := strconv.FormatInt(now, 10)
+	copyFileName := strconv.FormatInt(now, 10)
 
-	err = h.store.UploadSpec(tenant, name, payload)
+	err = h.store.UploadSpec(tenant, copyFileName, payload)
 	if err != nil {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	webhook := ds.Webhook{
+		Name:     request.WebhookName,
 		TenantId: tenant,
 		Spec:     request.Spec,
-		Copy:     name,
+		Copy:     copyFileName,
 		Created:  now,
 	}
 	err = h.dsc.Put(ds.KindWebhook, uuid.NewString(), &webhook)
@@ -94,6 +96,10 @@ func getCreateWebhookRequest(tenant string, body io.ReadCloser) (bool, *CreateWe
 		return false, nil, nil
 	}
 
+	if payload.WebhookName == "" {
+		logrus.Infof("invalid create webhook request with 'empty webhook name' tenant '%s'", tenant)
+		return false, nil, nil
+	}
 	oas, ok := validateSpec(tenant, payload.Spec)
 	if !ok {
 		return false, nil, nil
