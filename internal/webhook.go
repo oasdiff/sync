@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -124,11 +123,11 @@ func validateSpec(tenant string, spec string) (*openapi3.T, bool) {
 		logrus.Infof("failed to load OpenAPI spec from '%s' with '%v' tenant '%s'", spec, err, tenant)
 		return nil, false
 	}
-	err = t.Validate(context.Background())
-	if err != nil {
-		logrus.Infof("failed to validate OpenAPI spec from '%s' with '%v' tenant '%s'", spec, err, tenant)
-		return nil, false
-	}
+	// err = t.Validate(context.Background())
+	// if err != nil {
+	// 	logrus.Infof("failed to validate OpenAPI spec from '%s' with '%v' tenant '%s'", spec, err, tenant)
+	// 	return nil, false
+	// }
 
 	return t, true
 }

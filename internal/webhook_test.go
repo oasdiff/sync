@@ -19,7 +19,7 @@ func TestCreateWebhook(t *testing.T) {
 	var buf bytes.Buffer
 	require.NoError(t, json.NewEncoder(&buf).Encode(internal.CreateWebhookRequest{
 		WebhookName: "Ballon",
-		Spec:        "https://raw.githubusercontent.com/Tufin/oasdiff/main/data/simple.yaml",
+		Spec:        "https://raw.githubusercontent.com/oasdiff/refresh/main/data/openapi-test1.yaml",
 	}))
 	r, err := http.NewRequest(http.MethodPost, "/tenants/f1/webhooks", &buf)
 	require.NoError(t, err)
