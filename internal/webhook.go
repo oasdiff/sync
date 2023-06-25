@@ -53,14 +53,16 @@ func (h *Handle) CreateWebhook(c *gin.Context) {
 		return
 	}
 
+	id := uuid.NewString()
 	webhook := ds.Webhook{
+		Id:       id,
 		Name:     request.WebhookName,
 		TenantId: tenant,
 		Spec:     request.Spec,
 		Copy:     copyFileName,
 		Created:  now,
 	}
-	err = h.dsc.Put(ds.KindWebhook, uuid.NewString(), &webhook)
+	err = h.dsc.Put(ds.KindWebhook, id, &webhook)
 	if err != nil {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
@@ -68,6 +70,7 @@ func (h *Handle) CreateWebhook(c *gin.Context) {
 
 	h.sc.Info(fmt.Sprintf("webhook created '%+v'", webhook))
 	c.Writer.WriteHeader(http.StatusCreated)
+	c.JSON(http.StatusCreated, gin.H{"id": id})
 }
 
 func validateTenant(dsc ds.Client, tenantId string) bool {

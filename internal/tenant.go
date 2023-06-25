@@ -47,6 +47,7 @@ func (h *Handle) CreateTenant(c *gin.Context) {
 	}
 
 	h.sc.Info(fmt.Sprintf("tenant created '%+v'", t))
+	c.Writer.WriteHeader(http.StatusCreated)
 	c.JSON(http.StatusCreated, gin.H{"id": id})
 }
 

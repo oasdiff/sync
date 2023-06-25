@@ -13,12 +13,16 @@ curl -d '{"tenant": "my-company", "email": "james@my-company.com", "callback": "
 ```
 You will get a response with your tenant ID, that looks like this:
 ```
-{"tenant-id": "2ahh9d6a-2221-41d7-bbc5-a950958345"}
+{"id": "2ahh9d6a-2221-41d7-bbc5-a950958345"}
 ```
 
 Now, for each OpenAPI spec that you depend on, create a webhook:
 ```
 curl -d '{"webhook_name": "Ballon", "spec": "https://some-service.com/balloons"}' https://sync.oasdiff.com/tenants/{tenant-id}/webhooks
+```
+You will get a response with created webhook ID, that looks like this:
+```
+{"id": "2ahh9d6a-3344-41d7-bbc5-a950958345"}
 ```
 Notes:
 1. You can specify a `callback` an endpoint to be called on breaking changes, or `slack_channel` or both.

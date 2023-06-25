@@ -30,6 +30,11 @@ func TestCreateTenant(t *testing.T) {
 		slack.NewInMemoryClient()).ServeHTTP(w, r)
 
 	require.Equal(t, http.StatusCreated, w.Result().StatusCode)
+
+	var res map[string]string
+	err = json.NewDecoder(w.Result().Body).Decode(&res)
+	require.NoError(t, err)
+	require.NotEmpty(t, res["id"])
 }
 
 func Encode(t *testing.T, v any) *bytes.Buffer {

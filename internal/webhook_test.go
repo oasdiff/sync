@@ -23,10 +23,16 @@ func TestCreateWebhook(t *testing.T) {
 	}))
 	r, err := http.NewRequest(http.MethodPost, "/tenants/f1/webhooks", &buf)
 	require.NoError(t, err)
+
 	w := httptest.NewRecorder()
 
 	internal.SetupRouter(ds.NewInMemoryClient(nil), gcs.NewInMemoryStore(nil),
 		slack.NewInMemoryClient()).ServeHTTP(w, r)
 
 	require.Equal(t, http.StatusCreated, w.Result().StatusCode)
+
+	var res map[string]string
+	err = json.NewDecoder(w.Result().Body).Decode(&res)
+	require.NoError(t, err)
+	require.NotEmpty(t, res["id"])
 }
