@@ -18,7 +18,7 @@ You will get a response with your tenant ID, that looks like this:
 
 Now, for each OpenAPI spec that you depend on, create a webhook:
 ```
-curl -d '{"webhook_name": "Ballon", "spec": "https://some-service.com/balloons"}' https://sync.oasdiff.com/tenants/{tenant-id}/webhooks
+curl -d '{"webhook_name": "Balloon", "spec": "https://some-service.com/balloons"}' https://sync.oasdiff.com/tenants/{tenant-id}/webhooks
 ```
 You will get a response with created webhook ID, that looks like this:
 ```

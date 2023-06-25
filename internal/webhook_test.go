@@ -18,7 +18,7 @@ func TestCreateWebhook(t *testing.T) {
 
 	var buf bytes.Buffer
 	require.NoError(t, json.NewEncoder(&buf).Encode(internal.CreateWebhookRequest{
-		WebhookName: "Ballon",
+		WebhookName: "Balloon",
 		Spec:        "https://raw.githubusercontent.com/oasdiff/refresh/main/data/openapi-test1.yaml",
 	}))
 	r, err := http.NewRequest(http.MethodPost, "/tenants/f1/webhooks", &buf)
