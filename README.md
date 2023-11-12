@@ -29,8 +29,7 @@ curl -d '{
     "repo": "openai-openapi", \
     "path": "openapi.yaml", \
     "branch": "master", \
-    "spec": "https://raw.githubusercontent.com/openai/openai-openapi/master/openapi.yaml", \
-    "slack_channel": "https://hooks.slack.com/services/a05123b/nabc" \
+    "spec": "https://raw.githubusercontent.com/openai/openai-openapi/master/openapi.yaml" \
 }' https://sync.oasdiff.com/tenants/{tenant-id}/webhooks
 ```
 You will get a response with created webhook ID, that looks like this:
