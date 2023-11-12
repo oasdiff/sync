@@ -10,6 +10,11 @@ import (
 
 func main() {
 
-	_ = internal.SetupRouter(ds.NewClientWrapper(env.GetGCloudProject()),
-		gcs.NewStore(), slack.NewClientWrapper()).Run(":8080")
+	dsc := ds.NewClient(env.GetGCPProject(), "sync")
+	defer dsc.Close()
+
+	store := gcs.NewStore()
+	defer store.Close()
+
+	_ = internal.SetupRouter(dsc, store, slack.NewClientWrapper()).Run(":8080")
 }
