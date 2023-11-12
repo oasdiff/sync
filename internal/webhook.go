@@ -3,6 +3,7 @@ package internal
 import (
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -13,12 +14,16 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/google/uuid"
 	"github.com/oasdiff/go-common/ds"
-	"github.com/sirupsen/logrus"
+	"github.com/oasdiff/go-common/gcs"
 	"gopkg.in/yaml.v3"
 )
 
 type CreateWebhookRequest struct {
 	WebhookName string `json:"webhook_name"`
+	Owner       string `json:"owner"`
+	Repo        string `json:"repo"`
+	Branch      string `json:"branch"`
+	Path        string `json:"path"`
 	Spec        string `json:"spec"`
 }
 
@@ -37,30 +42,29 @@ func (h *Handle) CreateWebhook(c *gin.Context) {
 		return
 	}
 
-	payload, err := yaml.Marshal(oas)
-	if err != nil {
-		logrus.Errorf("failed to marshal OAS with '%v' tenant '%s'", err, tenant)
-		c.Writer.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	now := time.Now().Unix()
-	copyFileName := strconv.FormatInt(now, 10)
-
-	err = h.store.UploadSpec(tenant, copyFileName, payload)
-	if err != nil {
-		c.Writer.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
 	id := uuid.NewString()
+	now := time.Now().Unix()
+	copyFileName := fmt.Sprintf("%s/%s", id, strconv.FormatInt(now, 10))
+
+	// upload OpenAPI base spec as a copy to GCS
+	err := uploadSpec(h.store, tenant, id, copyFileName, oas)
+	if err != nil {
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	webhook := ds.Webhook{
 		Id:       id,
 		Name:     request.WebhookName,
 		TenantId: tenant,
+		Owner:    request.Owner,
+		Repo:     request.Repo,
+		Path:     request.Path,
+		Branch:   request.Branch,
 		Spec:     request.Spec,
 		Copy:     copyFileName,
 		Created:  now,
+		Updated:  now,
 	}
 	err = h.dsc.Put(ds.KindWebhook, id, &webhook)
 	if err != nil {
@@ -71,6 +75,22 @@ func (h *Handle) CreateWebhook(c *gin.Context) {
 	h.sc.Info(fmt.Sprintf("webhook created '%+v'", webhook))
 	c.Writer.WriteHeader(http.StatusCreated)
 	c.JSON(http.StatusCreated, gin.H{"id": id})
+}
+
+func uploadSpec(store gcs.Client, tenant, id, copyFileName string, oas *openapi3.T) error {
+
+	payload, err := yaml.Marshal(oas)
+	if err != nil {
+		slog.Error("failed to marshal base OpenAPI spec", "error", err, "tenant", tenant)
+		return err
+	}
+
+	err = store.UploadSpec(tenant, copyFileName, payload)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func validateTenant(dsc ds.Client, tenantId string) bool {
@@ -87,21 +107,21 @@ func validateTenant(dsc ds.Client, tenantId string) bool {
 func getCreateWebhookRequest(tenant string, body io.ReadCloser) (bool, *CreateWebhookRequest, *openapi3.T) {
 
 	if body == nil {
-		logrus.Infof("invalid create webhook request with 'empty body' tenant '%s'", tenant)
+		slog.Info("invalid create webhook request", "error", "empty body", "tenant", tenant)
 		return false, nil, nil
 	}
 
 	var payload CreateWebhookRequest
 	err := json.NewDecoder(body).Decode(&payload)
 	if err != nil {
-		logrus.Infof("failed to decode create tenant request body with '%v' tenant '%s'", err, tenant)
+		slog.Info("failed to decode create webhook request", "error", err, "tenant", tenant)
 		return false, nil, nil
 	}
 
-	if payload.WebhookName == "" {
-		logrus.Infof("invalid create webhook request with 'empty webhook name' tenant '%s'", tenant)
+	if ok := validateRequest(tenant, payload); !ok {
 		return false, nil, nil
 	}
+
 	oas, ok := validateSpec(tenant, payload.Spec)
 	if !ok {
 		return false, nil, nil
@@ -110,11 +130,43 @@ func getCreateWebhookRequest(tenant string, body io.ReadCloser) (bool, *CreateWe
 	return ok, &payload, oas
 }
 
-func validateSpec(tenant string, spec string) (*openapi3.T, bool) {
+func validateRequest(tenant string, r CreateWebhookRequest) bool {
 
-	u, err := url.ParseRequestURI(spec)
+	if r.WebhookName == "" {
+		slog.Info("invalid create webhook request", "error", "empty webhook name", "tenant", tenant)
+		return false
+	}
+	if r.Owner == "" {
+		slog.Info("invalid create webhook request", "error", "empty webhook repo owner", "tenant", tenant)
+		return false
+	}
+	if r.Repo == "" {
+		slog.Info("invalid create webhook request", "error", "empty webhook repo", "tenant", tenant)
+		return false
+	}
+	if r.Branch == "" {
+		slog.Info("invalid create webhook request", "error", "empty webhook branch", "tenant", tenant)
+		return false
+	}
+	if r.Path == "" {
+		slog.Info("invalid create webhook request", "error", "empty webhook OpenAPI revision file path", "tenant", tenant)
+		return false
+	}
+
+	revision := fmt.Sprintf("https://raw.githubusercontent.com/%s/%s/%s/%s", r.Owner, r.Repo, r.Branch, r.Path)
+	if _, ok := validateSpec(tenant, revision); !ok {
+		slog.Info("invalid create webhook request", "error", "invalid revision spec", "revision spec URL", revision, "tenant", tenant)
+		return false
+	}
+
+	return true
+}
+
+func validateSpec(tenant string, specUrl string) (*openapi3.T, bool) {
+
+	u, err := url.ParseRequestURI(specUrl)
 	if err != nil {
-		logrus.Infof("invalid spec url '%s' tenant '%s'", spec, tenant)
+		slog.Info("invalid spec url", "error", err, "spec URL", specUrl, "tenant", tenant)
 		return nil, false
 	}
 
@@ -123,7 +175,7 @@ func validateSpec(tenant string, spec string) (*openapi3.T, bool) {
 
 	t, err := loader.LoadFromURI(u)
 	if err != nil {
-		logrus.Infof("failed to load OpenAPI spec from '%s' with '%v' tenant '%s'", spec, err, tenant)
+		slog.Info("failed to load OpenAPI spec", err, "spec URL", specUrl, "tenant", tenant)
 		return nil, false
 	}
 	// err = t.Validate(context.Background())
