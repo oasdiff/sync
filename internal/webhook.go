@@ -14,8 +14,6 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/google/uuid"
 	"github.com/oasdiff/go-common/ds"
-	"github.com/oasdiff/go-common/gcs"
-	"gopkg.in/yaml.v3"
 )
 
 type CreateWebhookRequest struct {
@@ -47,7 +45,7 @@ func (h *Handle) CreateWebhook(c *gin.Context) {
 
 	// upload OpenAPI base spec as a copy to GCS
 	file := strconv.FormatInt(now, 10)
-	err := uploadSpec(h.store, tenant, id, file, oas)
+	err := h.store.UploadSpec(tenant, id, file, oas)
 	if err != nil {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
@@ -75,22 +73,6 @@ func (h *Handle) CreateWebhook(c *gin.Context) {
 	h.sc.Info(fmt.Sprintf("webhook created '%+v'", webhook))
 	c.Writer.WriteHeader(http.StatusCreated)
 	c.JSON(http.StatusCreated, gin.H{"id": id})
-}
-
-func uploadSpec(store gcs.Client, tenant, webhook string, name string, oas *openapi3.T) error {
-
-	payload, err := yaml.Marshal(oas)
-	if err != nil {
-		slog.Error("failed to marshal base OpenAPI spec", "error", err, "tenant", tenant)
-		return err
-	}
-
-	err = store.Upload(gcs.GetSpecPath(tenant, webhook, name), payload)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func validateTenant(dsc ds.Client, tenantId string) bool {
