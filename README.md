@@ -39,7 +39,7 @@ You will get a response with created webhook ID, that looks like this:
 ```
 
 Schema input parameters:
-1. `webhook_name` a uniq webhook name
+1. `webhook_name` a unique webhook name
 2. `owner` GitHub repo's owner
 3. `repo` GitHub repo
 4. `path` path to OpenAPI revision file
