@@ -44,10 +44,10 @@ func (h *Handle) CreateWebhook(c *gin.Context) {
 
 	id := uuid.NewString()
 	now := time.Now().Unix()
-	copyFileName := fmt.Sprintf("%s/%s", id, strconv.FormatInt(now, 10))
 
 	// upload OpenAPI base spec as a copy to GCS
-	err := uploadSpec(h.store, tenant, id, copyFileName, oas)
+	file := strconv.FormatInt(now, 10)
+	err := uploadSpec(h.store, tenant, id, file, oas)
 	if err != nil {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
 		return
@@ -62,7 +62,7 @@ func (h *Handle) CreateWebhook(c *gin.Context) {
 		Path:     request.Path,
 		Branch:   request.Branch,
 		Spec:     request.Spec,
-		Copy:     copyFileName,
+		Copy:     file,
 		Created:  now,
 		Updated:  now,
 	}
@@ -77,7 +77,7 @@ func (h *Handle) CreateWebhook(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"id": id})
 }
 
-func uploadSpec(store gcs.Client, tenant, id, copyFileName string, oas *openapi3.T) error {
+func uploadSpec(store gcs.Client, tenant, webhook string, name string, oas *openapi3.T) error {
 
 	payload, err := yaml.Marshal(oas)
 	if err != nil {
@@ -85,7 +85,7 @@ func uploadSpec(store gcs.Client, tenant, id, copyFileName string, oas *openapi3
 		return err
 	}
 
-	err = store.UploadSpec(tenant, copyFileName, payload)
+	err = store.Upload(gcs.GetSpecPath(tenant, webhook, name), payload)
 	if err != nil {
 		return err
 	}
