@@ -18,8 +18,12 @@ func TestCreateWebhook(t *testing.T) {
 
 	var buf bytes.Buffer
 	require.NoError(t, json.NewEncoder(&buf).Encode(internal.CreateWebhookRequest{
-		WebhookName: "Balloon",
-		Spec:        "https://raw.githubusercontent.com/oasdiff/refresh/main/data/openapi-test1.yaml",
+		WebhookName: "OpenAI",
+		Owner:       "openai",
+		Repo:        "openai-openapi",
+		Branch:      "master",
+		Path:        "openapi.yaml",
+		Spec:        "https://github.com/openai/openai-openapi/raw/e145786e70bf5fc1bc73c7cd19884f445d52c383/openapi.yaml",
 	}))
 	r, err := http.NewRequest(http.MethodPost, "/tenants/f1/webhooks", &buf)
 	require.NoError(t, err)
