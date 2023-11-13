@@ -10,10 +10,10 @@ Sync is a service to manage the APIs that you depend on. It is similar to a pack
 To use Sync, first create a tenant with a name:
 ```
 curl -d '{
-    "tenant": "my-company", \
-    "email": "james@my-company.com", \
-    "callback": "https://api.my-company.com/webhooks", \
-    "slack_channel": "https://hooks.slack.com/services/TLDF14G/AG123/abcd"\
+    "tenant": "my-company",
+    "email": "james@my-company.com",
+    "callback": "https://api.my-company.com/webhooks",
+    "slack_channel": "https://hooks.slack.com/services/TLDF14G/AG123/abcd"
 }' https://sync.oasdiff.com/tenants
 ```
 You will get a response with your tenant ID, that looks like this:
@@ -24,12 +24,12 @@ You will get a response with your tenant ID, that looks like this:
 Now, for each OpenAPI spec that you depend on, create a webhook:
 ```
 curl -d '{
-    "webhook_name": "OpenAI", \
-    "owner": "openai", \
-    "repo": "openai-openapi", \
-    "path": "openapi.yaml", \
-    "branch": "master", \
-    "spec": "https://raw.githubusercontent.com/openai/openai-openapi/master/openapi.yaml" \
+    "webhook_name": "OpenAI",
+    "owner": "openai",
+    "repo": "openai-openapi",
+    "path": "openapi.yaml",
+    "branch": "master",
+    "spec": "https://github.com/openai/openai-openapi/raw/e145786e70bf5fc1bc73c7cd19884f445d52c383/openapi.yaml"
 }' https://sync.oasdiff.com/tenants/{tenant-id}/webhooks
 ```
 You will get a response with created webhook ID, that looks like this:
