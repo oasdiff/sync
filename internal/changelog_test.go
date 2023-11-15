@@ -20,4 +20,6 @@ func TestHandle_GetChangelog(t *testing.T) {
 
 	internal.SetupRouter(ds.NewInMemoryClient(nil), gcs.NewInMemoryStore(nil),
 		slack.NewInMemoryClient()).ServeHTTP(w, r)
+
+	require.Equal(t, http.StatusOK, w.Result().StatusCode)
 }
