@@ -3,6 +3,7 @@ package internal
 import (
 	"fmt"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/oasdiff/go-common/ds"
 	"github.com/oasdiff/go-common/gcs"
@@ -19,6 +20,12 @@ func SetupRouter(dsc ds.Client, store gcs.Client, sc slack.Client) *gin.Engine {
 
 	h := NewHandle(dsc, store, sc)
 	router := gin.Default()
+
+	// allow CORS
+	router.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"http://localhost"},
+		AllowMethods: []string{"GET"},
+	}))
 
 	router.POST("/tenants", h.CreateTenant)
 	router.POST(fmt.Sprintf("/tenants/:%s/webhooks", PathParamTenantId), h.CreateWebhook)
