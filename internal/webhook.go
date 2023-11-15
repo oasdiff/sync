@@ -79,7 +79,7 @@ func validateTenant(dsc ds.Client, tenantId string) bool {
 
 	var tenant ds.Tenant
 	err := dsc.Get(ds.KindTenant, tenantId, &tenant)
-	if err != nil || tenant.Id == "" {
+	if err != nil || tenant.Id == "" || tenant.Id != tenantId {
 		return false
 	}
 
