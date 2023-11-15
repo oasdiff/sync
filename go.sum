@@ -141,6 +141,8 @@ github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 h1:RWengNIwukTxcDr9
 github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826/go.mod h1:TaXosZuwdSHYgviHp1DAtfrULt5eUgsSMsZf+YrPgl8=
 github.com/oasdiff/go-common v0.2.25 h1:IeP1LZYMqIQWtvyLFcBMbmeKdkmp4gPn3+2IhvKLjEM=
 github.com/oasdiff/go-common v0.2.25/go.mod h1:aF7FmHg0gJrOkWfnAQGkssImYgPwzmzYS+iXXpN6XSg=
+github.com/oasdiff/go-common v0.2.27 h1:KrXKvOZOAt9BkgYgGOe8cqof+P5L/ASGihQNMSeF2vk=
+github.com/oasdiff/go-common v0.2.27/go.mod h1:aF7FmHg0gJrOkWfnAQGkssImYgPwzmzYS+iXXpN6XSg=
 github.com/pelletier/go-toml/v2 v2.0.1/go.mod h1:r9LEWfGN8R5k0VXJ+0BkIe7MYkRdwZOjgMj2KwnJFUo=
 github.com/pelletier/go-toml/v2 v2.1.0 h1:FnwAJ4oYMvbT/34k9zzHuZNrhlz48GB3/s6at6/MHO4=
 github.com/pelletier/go-toml/v2 v2.1.0/go.mod h1:tJU2Z3ZkXwnxa4DPO899bsyIoywizdUvyaeZurnPPDc=
