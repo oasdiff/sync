@@ -1,12 +1,20 @@
 # sync
 
-Sync is a service to manage the APIs that you depend on. It is similar to a package manager, such as [npm](https://www.npmjs.com/), but for APIs
+Sync is a service designed to help developers stay ahead of API breaking changes and maintain application reliability. It enables you to register the APIs you rely on and receive notifications whenever a breaking change occurs.
 
-### How does sync help me?
-- Notifying you of API breaking changes
-- Providing a single place to manage API dependencies
+### Key Benefits of Sync
+- Proactive Notification System: Sync proactively alerts you to API breaking changes, allowing you to take timely action and prevent disruptions to your applications.
+- Centralized API Dependency Management: Sync provides a single platform to manage your API dependencies, simplifying the monitoring process and ensuring that you stay informed about changes across all your APIs.
+
+### How it works?
+Signing up for Sync is simple and straightforward. Just provide us with the URLs of the APIs you rely on, and we'll take care of the rest. Our tool will continuously monitor these OpenAPIs for changes and notify you via Slack whenever a breaking change is detected. This notification will include a summary and a link to a changelog report, allowing you to assess the impact on your applications and take appropriate action.
 
 ### How to use sync?
+1. Create a Tenant: Sign up for Sync and create a tenant with a name, your email address and a Slack channel URL. This tenant serves as the central hub for managing your API dependencies.
+2. Define Webhooks for Each API: For each OpenAPI specification you depend on, create a webhook.
+3. Receive Breaking Change Notifications.
+
+#### Create a Tenant
 To use Sync, first create a tenant with a name:
 ```
 curl -d '{
@@ -21,6 +29,7 @@ You will get a response with your tenant ID, that looks like this:
 {"id": "2ahh9d6a-2221-41d7-bbc5-a950958345"}
 ```
 
+#### Define Webhooks for Each API
 Now, for each OpenAPI spec that you depend on, create a webhook:
 ```
 curl -d '{
@@ -51,52 +60,3 @@ Notes:
 3. [in development] You will be able to specify an `event_type` that can be one of the follow: `diff` or `breaking-changes` (default) or `changelog`.
 
 You are all set :)
-
-Our service will pull new commit. In case of a new commit's breaking API change, the sync service will notify the provided slack channel.
-
-Providing a *slack channel* for callback, it will notify with the API breaking-changes in a [markdown](https://en.wikipedia.org/wiki/Markdown) format. 
-
-In case of providing a *callback* URL it will send a JSON like the follow:
-```
-{
-    "breaking-changes": [
-        {
-            "id": "response-success-status-removed",
-            "text": "removed the success response with the status '200'",
-            "level": 0,
-            "operation": "GET",
-            "operationId": "GetSecurityScore",
-            "path": "/api/{domain}/{project}/badges/security-score",
-            "source": "https://some-service.com/balloons"
-        },
-        {
-            "id": "request-parameter-removed",
-            "text": "deleted the 'cookie' request parameter 'test'",
-            "level": 1,
-            "operation": "GET",
-            "operationId": "GetSecurityScore",
-            "path": "/api/{domain}/{project}/badges/security-score",
-            "source": "https://some-service.com/balloons"
-        },
-        {
-            "id": "request-parameter-removed",
-            "text": "deleted the 'header' request parameter 'user'",
-            "level": 1,
-            "operation": "GET",
-            "operationId": "GetSecurityScore",
-            "path": "/api/{domain}/{project}/badges/security-score",
-            "source": "https://some-service.com/balloons"
-        },
-        {
-            "id": "request-parameter-removed",
-            "text": "deleted the 'query' request parameter 'filter'",
-            "level": 1,
-            "operation": "GET",
-            "operationId": "GetSecurityScore",
-            "path": "/api/{domain}/{project}/badges/security-score",
-            "source": "https://some-service.com/balloons"
-        }
-    ]
-}
-```
-Note, provided callback service should response with HTTP `200 OK` or `201 Created`.
