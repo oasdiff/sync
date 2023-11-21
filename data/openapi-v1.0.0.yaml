@@ -1,0 +1,78 @@
+# file: openapi-v1.0.0.yaml
+openapi: 3.0.0
+info:
+  title: AnotherAI API
+  description: The AnotherAI REST API.
+  version: "1.0.0"
+  termsOfService: https://another-ai.io/terms-of-use
+  contact:
+    name: AnotherAI Support
+    url: https://another-ai.io/help
+  license:
+    name: Apache 2
+    url: https://www.apache.org/licenses/LICENSE-2.0
+servers:
+  - url: https://another-ai.io/v2
+tags:
+  - name: Images
+    description:  The model will generate an image for a given prompt.
+paths:
+  /images/generations:
+    post:
+      operationId: createImage
+      tags:
+        - Images
+      summary: Creates an image given a prompt.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateImageRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImagesResponse"
+components:
+  schemas:
+
+    CreateImageRequest:
+        type: object
+        properties:
+          prompt:
+            description: A text description of the desired image(s).
+            type: string
+            example: "A cute baby sea otter"
+          n: &images_n
+            type: integer
+            minimum: 1
+            maximum: 7
+            default: 1
+            example: 1
+            nullable: true
+            description: The number of images to generate. Must be between 1 and 7.
+        required:
+          - prompt
+
+    ImagesResponse:
+        properties:
+          created:
+            type: integer
+          data:
+            type: array
+            items:
+              $ref: "#/components/schemas/Image"
+        required:
+          - created
+          - data
+    
+    Image:
+      type: object
+      description: Represents the url of an image.
+      properties:
+        url:
+          type: string
+          description: The URL of the generated image.
