@@ -12,7 +12,12 @@ Signing up for Sync is simple and straightforward. Just provide us with the URLs
 ### How to use sync?
 1. Create a Tenant: Sign up for Sync and create a tenant with a name, your email address and a Slack channel URL. This tenant serves as the central hub for managing your API dependencies.
 2. Define Webhooks for Each API: For each OpenAPI specification you depend on, create a webhook.
-3. Receive Breaking Change Notifications.
+3. Receive Breaking Change Notifications. Example:
+```
+OpenAI Changelog
+179 breaking changes: 2 error, 177 warning
+```
+Explore a detailed breakdown of changes in this comprehensive HTML changelog.
 
 #### Create a Tenant
 To use Sync, first create a tenant with a name:
@@ -55,8 +60,8 @@ Schema input parameters:
 6. `spec` full URL to base OpenAPI file
 7. `slack_channel` will be called on breaking changes.
 
-Notes:
-1. Currently only GitHub is supported.
-3. [in development] You will be able to specify an `event_type` that can be one of the follow: `diff` or `breaking-changes` (default) or `changelog`.
+Note, currently only GitHub is supported.
 
 You are all set :)
+
+Tip: to discover a vast collection of OpenAPI specifications, consider exploring this open-source [catalog](https://apis.guru/).
