@@ -71,7 +71,6 @@ func (h *Handle) CreateWebhook(c *gin.Context) {
 	}
 
 	h.sc.Info(fmt.Sprintf("webhook created '%+v'", webhook))
-	c.Writer.WriteHeader(http.StatusCreated)
 	c.JSON(http.StatusCreated, gin.H{"id": id})
 }
 
