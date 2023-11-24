@@ -22,6 +22,7 @@ func SetupRouter(dsc ds.Client, store gcs.Client, sc slack.Client) *gin.Engine {
 
 	router.POST("/tenants", h.CreateTenant)
 	router.POST(fmt.Sprintf("/tenants/:%s/webhooks", PathParamTenantId), h.CreateWebhook)
+	router.GET(fmt.Sprintf("/tenants/:%s/webhooks", PathParamTenantId), h.GetWebhooks)
 	router.GET(fmt.Sprintf("/tenants/:%s/webhooks/:%s/changelog/:%s",
 		PathParamTenantId, PathParamWebhookId, PathParamChangelogId), h.GetChangelog)
 
