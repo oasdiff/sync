@@ -7,7 +7,7 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/goccy/go-json v0.10.2
 	github.com/google/uuid v1.4.0
-	github.com/oasdiff/go-common v0.2.27
+	github.com/oasdiff/go-common v0.2.28
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.8.4
 )

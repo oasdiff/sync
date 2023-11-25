@@ -18,7 +18,7 @@ func (h *Handle) GetWebhooks(c *gin.Context) {
 
 	var webhooks []ds.Webhook
 	err := h.dsc.GetFilter(ds.KindWebhook,
-		[]ds.FilterField{{Name: "tenant_id", Operator: "=", Value: tenant}},
+		[]ds.FilterField{{Name: "tenant_id", Operator: ds.Equal1, Value: tenant}},
 		&webhooks)
 	if err != nil {
 		c.Writer.WriteHeader(http.StatusBadRequest)
