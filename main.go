@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/oasdiff/go-common/ds"
 	"github.com/oasdiff/go-common/env"
 	"github.com/oasdiff/go-common/gcs"
@@ -16,5 +18,7 @@ func main() {
 	store := gcs.NewStore()
 	defer store.Close()
 
-	_ = internal.SetupRouter(dsc, store, slack.NewClientWrapper()).Run(":8080")
+	if err := internal.SetupRouter(dsc, store, slack.NewClientWrapper()); err != nil {
+		os.Exit(1)
+	}
 }
