@@ -18,7 +18,8 @@ func main() {
 	store := gcs.NewStore()
 	defer store.Close()
 
-	if err := internal.SetupRouter(dsc, store, slack.NewClientWrapper()); err != nil {
+	if err := internal.SetupRouter(dsc, store, slack.NewClientWrapper()).
+		Run(":8080"); err != nil {
 		os.Exit(1)
 	}
 }
