@@ -1,187 +1,164 @@
 openapi: 3.0.0
 info:
-  title: OpenAPI Specification for Sync Service
+  title: OAS Diff API
   version: 1.0.0
-  description: This OpenAPI Specification describes the API for the Sync service, which allows users to create and manage tenants, webhooks, and changelog.
-servers:
-  - url: http://localhost:8080
+  x-rosetta:
+    id: 5902f8fd-54a3-4b6b-9d62-ddd21ff43fba
 paths:
   /tenants:
     post:
-      summary: Create a new tenant.
-      operationId: createTenant
+      operationId: POST_tenants
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateTenantRequest'
+        required: true
       responses:
-        '201':
-          description: Tenant created successfully.
+        "201":
           content:
             application/json:
               schema:
-                type: object
                 properties:
                   id:
                     type: string
-                    example: 12345678-abcd-1234-5678-1234567890ab
-        '400':
-          description: Bad request.
+                type: object
+          description: Created
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Create a new tenant
   /tenants/{tenant-id}/webhooks:
-    post:
-      summary: Create a new webhook for a tenant.
-      operationId: createWebhook
+    get:
+      operationId: GET_tenants_{tenant_id}_webhooks
       parameters:
-        - name: tenant-id
-          in: path
+        - in: path
+          name: tenant-id
           required: true
           schema:
             type: string
-            example: 12345678-abcd-1234-5678-1234567890ab
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Webhook'
+                type: array
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Get all webhooks for a tenant
+    post:
+      operationId: POST_tenants_{tenant_id}_webhooks
+      parameters:
+        - in: path
+          name: tenant-id
+          required: true
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateWebhookRequest'
+        required: true
       responses:
-        '201':
-          description: Webhook created successfully.
+        "201":
           content:
             application/json:
               schema:
-                type: object
                 properties:
                   id:
                     type: string
-                    example: 12345678-abcd-1234-5678-1234567890ab
-        '400':
-          description: Bad request.
-    get:
-      summary: Get all webhooks for a tenant.
-      operationId: getWebhooks
-      parameters:
-        - name: tenant-id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 12345678-abcd-1234-5678-1234567890ab
-      responses:
-        '200':
-          description: Webhooks retrieved successfully.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Webhook'
-        '400':
-          description: Bad request.
+                type: object
+          description: Created
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Create a new webhook for a tenant
   /tenants/{tenant-id}/webhooks/{webhook-id}/changelog/{changelog-id}:
     get:
-      summary: Get the changelog for a specific webhook.
-      operationId: getChangelog
+      operationId: GET_tenants_{tenant_id}_webhooks_{webhook_id}_changelog_{changelog_id}
       parameters:
-        - name: tenant-id
-          in: path
+        - in: path
+          name: tenant-id
           required: true
           schema:
             type: string
-            example: 12345678-abcd-1234-5678-1234567890ab
-        - name: webhook-id
-          in: path
+        - in: path
+          name: webhook-id
           required: true
           schema:
             type: string
-            example: 12345678-abcd-1234-5678-1234567890ab
-        - name: changelog-id
-          in: path
+        - in: path
+          name: changelog-id
           required: true
           schema:
             type: string
-            example: 12345678-abcd-1234-5678-1234567890ab
       responses:
-        '200':
-          description: Changelog retrieved successfully.
+        "200":
           content:
             text/html:
               schema:
                 type: string
-        '400':
-          description: Bad request.
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Get a changelog for a webhook
 components:
   schemas:
     CreateTenantRequest:
-      type: object
       properties:
-        tenant:
-          type: string
-          example: My Tenant
-        email:
-          type: string
-          example: username@example.com
         callback:
           type: string
-          example: https://example.com/callback
+        email:
+          type: string
         slack_channel:
           type: string
-          example: https://hooks.slack.com/services/XXXXXXXXX/YYYYYYYYY/ZZZZZZZZZZZZ
-    CreateWebhookRequest:
+        tenant:
+          type: string
       type: object
+    CreateWebhookRequest:
       properties:
+        branch:
+          type: string
+        owner:
+          type: string
+        path:
+          type: string
+        repo:
+          type: string
+        spec:
+          type: string
         webhook_name:
           type: string
-          example: My Webhook
-        owner:
-          type: string
-          example: MyOrg
-        repo:
-          type: string
-          example: MyRepo
-        branch:
-          type: string
-          example: master
-        path:
-          type: string
-          example: path/to/openapi.yaml
-        spec:
-          type: string
-          example: https://raw.githubusercontent.com/MyOrg/MyRepo/master/path/to/openapi.yaml
-    Webhook:
       type: object
+    Webhook:
       properties:
-        id:
-          type: string
-          example: 12345678-abcd-1234-5678-1234567890ab
-        name:
-          type: string
-          example: My Webhook
-        tenant_id:
-          type: string
-          example: 12345678-abcd-1234-5678-1234567890ab
-        owner:
-          type: string
-          example: MyOrg
-        repo:
-          type: string
-          example: MyRepo
-        path:
-          type: string
-          example: path/to/openapi.yaml
         branch:
           type: string
-          example: master
-        spec:
-          type: string
-          example: https://raw.githubusercontent.com/MyOrg/MyRepo/master/path/to/openapi.yaml
         copy:
           type: string
-          example: 1658761825
         created:
           type: integer
-          example: 1658761825
+        id:
+          type: string
+        name:
+          type: string
+        owner:
+          type: string
+        path:
+          type: string
+        repo:
+          type: string
+        spec:
+          type: string
+        tenant_id:
+          type: string
         updated:
           type: integer
-          example: 1658761825
+      type: object
 
