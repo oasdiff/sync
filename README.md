@@ -7,7 +7,12 @@ Sync is a service designed to help developers stay ahead of API breaking changes
 - Centralized API Dependency Management: Sync provides a single platform to manage your API dependencies, simplifying the monitoring process and ensuring that you stay informed about changes across all your APIs.
 
 ### How it works?
-Signing up for Sync is simple and straightforward. Just provide us with the URLs of the APIs you rely on, and we'll take care of the rest. Our tool will continuously monitor these OpenAPIs for changes and notify you via Slack whenever a breaking change is detected. This notification will include a summary and a link to a changelog report, allowing you to assess the impact on your applications and take appropriate action.
+Signing up for Sync is simple and straightforward. Just provide us with the URLs of the APIs you rely on, and we'll take care of the rest. Our tool will continuously monitor these OpenAPIs for changes and notify you via Slack whenever a breaking change is detected.
+
+The Slack message includes:
+- Webhook Name**: The name of the webhook triggering the notification.
+- Changelog Link: A hyperlink to the detailed changelog.
+- Summary of Breaking Changes: A brief summary of the detected breaking changes, including counts of errors and warnings.
 
 ### How to use sync?
 1. Create a Tenant: Sign up for Sync and create a tenant with a name, your email address and a Slack channel URL. This tenant serves as the central hub for managing your API dependencies.
