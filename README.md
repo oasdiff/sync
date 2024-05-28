@@ -10,7 +10,7 @@ Sync is a service designed to help developers stay ahead of API breaking changes
 Signing up for Sync is simple and straightforward. Just provide us with the URLs of the APIs you rely on, and we'll take care of the rest. Our tool will continuously monitor these OpenAPIs for changes and notify you via Slack whenever a breaking change is detected.
 
 The Slack message includes:
-- Webhook Name**: The name of the webhook triggering the notification.
+- Webhook Name: The name of the webhook triggering the notification.
 - Changelog Link: A hyperlink to the detailed changelog.
 - Summary of Breaking Changes: A brief summary of the detected breaking changes, including counts of errors and warnings.
 
